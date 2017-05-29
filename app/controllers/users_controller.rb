@@ -1,21 +1,14 @@
-class ApplicationController < ActionController::Base
-  protect_from_forgery with: :exception
-
-  private
-
-  def require_user_logged_in
-    unless logged_in?
-      redirect_to login_url
-    end
-  end
-end
-
+class UsersController < ApplicationController
+  before_action :require_user_logged_in, only: [:index, :show, :followings, :followers]
+  
   def index
     @users = User.all.page(params[:page])
   end
 
   def show
     @user = User.find(params[:id])
+    @microposts = @user.microposts.order('created_at DESC').page(params[:page])
+    counts(@user)
   end
 
   def new
